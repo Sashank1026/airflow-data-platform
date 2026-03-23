@@ -302,9 +302,9 @@ with DAG(
     # registry_uri = "{{ params.schema_registry_uri or var.value.get('SCHEMA_REGISTRY_URI', '') or '" + SCHEMA_REGISTRY_URI + "' }}"
 
     registry = load_registry(registry_uri=registry_uri)
-    planned = plan_datasets(registry=registry, load_date="{{ params.load_date }}")
+    planned = plan_datasets(registry=registry)
 
     # Dynamic task mapping = one task per dataset (parallelizable)
-    ingestions = ingest_dataset.expand(ds_cfg=planned, load_date="{{ params.load_date }}")
+    ingestions = ingest_dataset.expand(ds_cfg=planned)
 
     start >> registry >> planned >> ingestions >> end
