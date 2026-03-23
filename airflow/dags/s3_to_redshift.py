@@ -8,7 +8,7 @@ from typing import Any, Dict, List
 
 from airflow import DAG
 from airflow.models.param import Param
-from airflow.decorators import task
+from airflow.decorators import task, get_current_context
 from airflow.operators.empty import EmptyOperator
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from airflow.providers.postgres.hooks.postgres import PostgresHook
@@ -219,7 +219,7 @@ def plan_datasets(registry: Dict[str, Any], load_date: str | None = None) -> Lis
     return a list of dataset dicts to ingest. Skips non-required datasets with no files.
     """
     from airflow.utils.context import Context
-    context: Context = plan_datasets.get_current_context()  # type: ignore
+    context: Context = get_current_context()  # type: ignore
     effective_date = _resolve_load_date(context, load_date)
 
     defaults = registry.get("defaults", {}) or {}
@@ -260,7 +260,7 @@ def ingest_dataset(ds_cfg: Dict[str, Any], load_date: str | None = None) -> None
       - COPY all files from s3://bucket/<prefix_base>/<load_date>/ into schema.table
     """
     from airflow.utils.context import Context
-    context: Context = ingest_dataset.get_current_context()  # type: ignore
+    context: Context = get_current_context()  # type: ignore
     effective_date = _resolve_load_date(context, load_date)
 
     bucket = ds_cfg["s3_bucket"]
