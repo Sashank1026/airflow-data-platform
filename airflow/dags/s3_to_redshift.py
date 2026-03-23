@@ -11,7 +11,7 @@ from airflow.models.param import Param
 # from airflow.decorators import task, get_current_context
 
 from airflow.decorators import task
-from airflow.operators.python import get_current_contex
+from airflow.operators.python import get_current_context
 
 from airflow.operators.empty import EmptyOperator
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
