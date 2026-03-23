@@ -186,12 +186,21 @@ def _build_copy_sql(ds_cfg: Dict[str, Any], s3_uri: str, include_columns: bool =
     region_clause = f"\nREGION '{S3_REGION}'" if ADD_REGION_IN_COPY else ""
 
     all_clauses = fmt_clauses + copy_opts
-    return f'''
-    COPY "{schema}"."{table}"{columns_clause}
-    FROM '{s3_uri}'
-    IAM_ROLE '{IAM_ROLE_ARN}'
-    {'\n    '.join(all_clauses)}{region_clause};
-    '''
+    clauses_str = "\n    ".join(all_clauses)
+
+    copy_sql = (
+        f'COPY "{schema}"."{table}"{columns_clause}\n'
+        f"FROM '{s3_uri}'\n"
+        f"IAM_ROLE '{IAM_ROLE_ARN}'\n"
+        f"{clauses_str}{region_clause};"
+    )
+    return copy_sql
+    # return f'''
+    # COPY "{schema}"."{table}"{columns_clause}
+    # FROM '{s3_uri}'
+    # IAM_ROLE '{IAM_ROLE_ARN}'
+    # {'\n    '.join(all_clauses)}{region_clause};
+    # '''
 
 # ---------------------------
 # Tasks
