@@ -24,32 +24,32 @@ datasets:
       - { name: created_at, type: timestamp }
     # inherits csv/header/delimiter/etc from defaults
 
-  # enrollments:
-  #   columns:
-  #     - { name: enrollment_id, type: varchar(64) }
-  #     - { name: user_id,       type: varchar(64) }
-  #     - { name: course_id,     type: varchar(64) }
-  #     - { name: status,        type: varchar(32) }
-  #     - { name: enrolled_at,   type: timestamp }
+  enrollments:
+    columns:
+      - { name: enrollment_id, type: varchar(64) }
+      - { name: user_id,       type: varchar(64) }
+      - { name: course_id,     type: varchar(64) }
+      - { name: status,        type: varchar(32) }
+      - { name: enrolled_at,   type: timestamp }
 
-  # courses:
-  #   columns:
-  #     - { name: course_id,  type: varchar(64) }
-  #     - { name: title,      type: varchar(256) }
-  #     - { name: category,   type: varchar(128) }
-  #     - { name: created_at, type: timestamp }
-  #     - { name: updated_at, type: timestamp }
+  courses:
+    columns:
+      - { name: course_id,  type: varchar(64) }
+      - { name: title,      type: varchar(256) }
+      - { name: category,   type: varchar(128) }
+      - { name: created_at, type: timestamp }
+      - { name: updated_at, type: timestamp }
 
-  # events:
-  #   # If events are CSV:
-  #   columns:
-  #     - { name: event_id,   type: varchar(64) }
-  #     - { name: user_id,    type: varchar(64) }
-  #     - { name: event_name, type: varchar(128) }
-  #     - { name: event_ts,   type: timestamp }
-  #     - { name: metadata,   type: varchar(1024) }
-  #   # Example if they were JSON instead (uncomment and remove 'columns' above):
-  #   # format: json
-  #   # jsonpaths: s3://<bucket>/jsonpaths/events_paths.json   # or omit for JSON 'auto'
-  #   # columns: []   # (COPY JSON often omits explicit columns)
-  #   # required: false
+  events:
+    # If events are CSV:
+    columns:
+      - { name: event_id,   type: varchar(64) }
+      - { name: user_id,    type: varchar(64) }
+      - { name: event_name, type: varchar(128) }
+      - { name: event_ts,   type: timestamp }
+      - { name: metadata,   type: varchar(1024) }
+    # Example if they were JSON instead (uncomment and remove 'columns' above):
+    # format: json
+    # jsonpaths: s3://<bucket>/jsonpaths/events_paths.json   # or omit for JSON 'auto'
+    # columns: []   # (COPY JSON often omits explicit columns)
+    # required: false
