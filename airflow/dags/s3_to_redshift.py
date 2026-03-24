@@ -271,11 +271,28 @@ def ingest_dataset(ds_cfg: Dict[str, Any], load_date: str | None = None) -> None
     s3_uri = f"s3://{bucket}/{date_prefix}"
 
     # DDL (if schema provided)
-    ddl = _build_create_table_sql(ds_cfg["schema"], ds_cfg["table"], ds_cfg.get("columns", []))
+    # ddl = _build_create_table_sql(ds_cfg["schema"], ds_cfg["table"], ds_cfg.get("columns", []))
     pg = PostgresHook(postgres_conn_id=REDSHIFT_CONN_ID)
-    if ddl:
-        pg.run(ddl)
-        print(f"[{ds_cfg['name']}] Ensured table {ds_cfg['schema']}.{ds_cfg['table']}")
+    pg.run(f'CREATE SCHEMA IF NOT EXISTS "{schema}";')
+
+    # 2. Create table (ALWAYS separate execute)
+    if columns:
+        cols_sql = ",\n        ".join(
+            [f'{c["name"]} {c["type"]}' for c in columns]
+        )
+
+        create_table_sql = f'''
+        CREATE TABLE IF NOT EXISTS "{schema}"."{table}" (
+            {cols_sql}
+        )
+        DISTSTYLE AUTO
+        SORTKEY AUTO;
+        '''
+        pg.run(create_table_sql)
+        print(f"[{ds_cfg['name']}] Ensured table {schema}.{table}")
+    # if ddl:
+    #     pg.run(ddl)
+    #     print(f"[{ds_cfg['name']}] Ensured table {ds_cfg['schema']}.{ds_cfg['table']}")
 
     # COPY
     copy_sql = _build_copy_sql(ds_cfg, s3_uri, include_columns=True)
