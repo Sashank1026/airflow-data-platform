@@ -1,7 +1,7 @@
 # Global defaults (can be overridden per dataset)
 defaults:
   schema: POC_RAW
-  s3_bucket: lms-poc-sashank-100
+  s3_bucket: lms-poc-sashank-101
   root_prefix: raw                 # datasets live under raw/<dataset>/<YYYY-MM-DD>/
   format: csv                      # csv | json | parquet
   header: true                     # CSV header present?
