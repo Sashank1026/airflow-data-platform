@@ -265,7 +265,9 @@ def ingest_dataset(ds_cfg: Dict[str, Any], load_date: str | None = None) -> None
     from airflow.utils.context import Context
     context: Context = get_current_context()  # type: ignore
     effective_date = _resolve_load_date(context, load_date)
-
+    schema = ds_cfg["schema"]
+    table = ds_cfg["table"]
+    columns = ds_cfg.get("columns", [])
     bucket = ds_cfg["s3_bucket"]
     date_prefix = ds_cfg["s3_date_prefix"]  # set by plan_datasets
     s3_uri = f"s3://{bucket}/{date_prefix}"
