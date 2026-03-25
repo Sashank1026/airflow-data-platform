@@ -17,6 +17,7 @@ defaults:
 datasets:
   users:
     # table name defaults to dataset name ("users"); override with 'table:' if different
+    required: false  # users dataset is optional; if missing for a date, the DAG will still run and load other datasets
     columns:
       - { name: user_id,    type: varchar(64) }
       - { name: name,       type: varchar(256) }
@@ -27,6 +28,7 @@ datasets:
   # ENROLLMENTS
   # -----------------------------
   enrollments:
+    required: false
     columns:
       - { name: enrollment_id,     type: varchar(64) }
       - { name: user_id,           type: varchar(64) }
@@ -44,6 +46,7 @@ datasets:
   # COURSES
   # -----------------------------
   courses:
+    required: false
     columns:
       - { name: course_id,   type: varchar(64) }
       - { name: title,       type: varchar(256) }
@@ -73,6 +76,7 @@ datasets:
   #   # columns: []   # (COPY JSON often omits explicit columns)
   #   # required: false
   events:
+    required: false
     columns:
       - { name: event_id,        type: varchar(64) }
       - { name: user_id,         type: varchar(64) }
