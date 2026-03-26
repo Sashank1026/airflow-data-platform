@@ -25,7 +25,7 @@ AWS_CONN_ID = "aws_default"
 REDSHIFT_CONN_ID = "redshift_default"
 
 # Redshift COPY role
-IAM_ROLE_ARN = "arn:aws:iam::761200394237:role/service-role/AmazonRedshift-CommandsAccessRole-20260325T143032"
+IAM_ROLE_ARN = "arn:aws:iam::058264106614:role/service-role/AmazonRedshift-CommandsAccessRole-20260326T142010"
 # If S3 bucket region differs from Redshift region
 ADD_REGION_IN_COPY = False
 S3_REGION = "us-east-1"
