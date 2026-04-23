@@ -208,7 +208,42 @@ def _build_copy_sql(ds_cfg: Dict[str, Any], s3_uri: str, include_columns: bool =
     # IAM_ROLE '{IAM_ROLE_ARN}'
     # {'\n    '.join(all_clauses)}{region_clause};
     # '''
+def _rewrite_json_array_to_ndjson(
+    s3: S3Hook,
+    bucket: str,
+    source_prefix: str,
+) -> str:
+    """
+    Reads JSON files under source_prefix.
+    If root is a JSON array, rewrites to NDJSON (one object per line)
+    under <source_prefix>/_ndjson/ and returns that new prefix.
+    """
+    target_prefix = source_prefix.rstrip("/") + "/_ndjson/"
+    keys = s3.list_keys(bucket_name=bucket, prefix=source_prefix) or []
 
+    for key in keys:
+        if key.endswith("/"):
+            continue
+
+        content = s3.read_key(key=key, bucket_name=bucket)
+        data = json.loads(content)
+
+        # Convert array -> NDJSON
+        if isinstance(data, list):
+            out = "\n".join(json.dumps(obj) for obj in data)
+        else:
+            # single object, still safe
+            out = json.dumps(data)
+
+        target_key = target_prefix + Path(key).name
+        s3.load_string(
+            string_data=out,
+            bucket_name=bucket,
+            key=target_key,
+            replace=True,
+        )
+
+    return target_prefix
 # ---------------------------
 # Tasks
 # ---------------------------
@@ -272,9 +307,27 @@ def ingest_dataset(ds_cfg: Dict[str, Any], load_date: str | None = None) -> None
     schema = ds_cfg["schema"]
     table = ds_cfg["table"]
     columns = ds_cfg.get("columns", [])
+    # bucket = ds_cfg["s3_bucket"]
+    # date_prefix = ds_cfg["s3_date_prefix"]  # set by plan_datasets
+    # s3_uri = f"s3://{bucket}/{date_prefix}"
     bucket = ds_cfg["s3_bucket"]
     date_prefix = ds_cfg["s3_date_prefix"]  # set by plan_datasets
-    s3_uri = f"s3://{bucket}/{date_prefix}"
+
+    s3 = S3Hook(aws_conn_id=AWS_CONN_ID)
+
+# Default: load from original prefix
+    load_prefix = date_prefix
+
+# FIX: for JSON only, rewrite array -> NDJSON
+    if ds_cfg["format"] == "json":
+        load_prefix = _rewrite_json_array_to_ndjson(
+            s3=s3,
+            bucket=bucket,
+            source_prefix=date_prefix,
+            )
+
+# COPY will now read from the correct prefix
+    s3_uri = f"s3://{bucket}/{load_prefix}"
 
     # DDL (if schema provided)
     # ddl = _build_create_table_sql(ds_cfg["schema"], ds_cfg["table"], ds_cfg.get("columns", []))
