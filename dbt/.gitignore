@@ -2,3 +2,17 @@
 target/
 dbt_packages/
 logs/
+
+# Personal account
+# ssh-keygen -t ed25519 -C "slenka@pluralsight.com" -f ~/.ssh/id_ed25519_ps
+
+# # Office account
+# ssh-keygen -t ed25519 -C "slenka1@evoketechnologies.com" -f ~/.ssh/id_ed25519_evoke
+
+# eval "$(ssh-agent -s)"
+# ssh-add ~/.ssh/id_ed25519_ps
+# ssh-add ~/.ssh/id_ed25519_evoke
+# cat ~/.ssh/id_ed25519.pub
+# ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOp7jye0WGD5YCjSWpk7+uvsaurgkbr0zBsoEVPXPFOe slenka1@evoketechnologies.com
+# SLENKA-M-8824:Projects-POC slenka1$ cat ~/.ssh/id_ed25519_ps.pub
+# ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEksMIJ43R+XjiCmDu+gnjR4b8jHVal72WUNr7/dnSlj slenka@pluralsight.com

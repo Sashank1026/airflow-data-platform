@@ -25,7 +25,7 @@ AWS_CONN_ID = "aws_default"
 REDSHIFT_CONN_ID = "redshift_default"
 
 # Redshift COPY role
-IAM_ROLE_ARN = "arn:aws:iam::742460038752:role/service-role/AmazonRedshift-CommandsAccessRole-20260331T184407"
+IAM_ROLE_ARN = "arn:aws:iam::788373020505:role/service-role/AmazonRedshift-CommandsAccessRole-20260423T150934"
 # If S3 bucket region differs from Redshift region
 ADD_REGION_IN_COPY = False
 S3_REGION = "us-east-1"
@@ -171,10 +171,14 @@ def _build_copy_sql(ds_cfg: Dict[str, Any], s3_uri: str, include_columns: bool =
         if delimiter and delimiter != ",":
             fmt_clauses.append(f"DELIMITER '{delimiter}'")
     elif fmt == "json":
-        if jsonpaths:
-            fmt_clauses = [f"JSON '{jsonpaths}'"]
-        else:
-            fmt_clauses = ["JSON 'auto'"]
+    # Nested JSON ==> SUPER
+        fmt_clauses = ["FORMAT AS JSON 'auto'"]
+        columns_clause = ""  # no column list for SUPER
+    # elif fmt == "json":
+    #     if jsonpaths:
+    #         fmt_clauses = [f"JSON '{jsonpaths}'"]
+    #     else:
+    #         fmt_clauses = ["JSON 'auto'"]
     elif fmt == "parquet":
         fmt_clauses = ["FORMAT AS PARQUET"]
         # For Parquet, you usually omit explicit columns in COPY.
@@ -297,7 +301,9 @@ def ingest_dataset(ds_cfg: Dict[str, Any], load_date: str | None = None) -> None
     #     print(f"[{ds_cfg['name']}] Ensured table {ds_cfg['schema']}.{ds_cfg['table']}")
 
     # COPY
-    copy_sql = _build_copy_sql(ds_cfg, s3_uri, include_columns=True)
+    include_cols = False if ds_cfg["format"] == "json" else True
+    copy_sql = _build_copy_sql(ds_cfg, s3_uri, include_columns=include_cols)
+    # copy_sql = _build_copy_sql(ds_cfg, s3_uri, include_columns=True)
     print(f"[{ds_cfg['name']}] Executing COPY:\n{copy_sql}")
     pg.run(copy_sql)
     print(f"[{ds_cfg['name']}] COPY completed from {s3_uri}")
