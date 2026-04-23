@@ -226,7 +226,26 @@ def _rewrite_json_array_to_ndjson(
             continue
 
         content = s3.read_key(key=key, bucket_name=bucket)
-        data = json.loads(content, parse_constant=lambda c: None)  # handle NaN/Inf if present
+        # data = json.loads(content, parse_constant=lambda c: None)  # handle NaN/Inf if present
+        try:
+            data = json.loads(content, parse_constant=lambda c: None)  # handle NaN/Inf if present
+            if isinstance(data, list):
+                records = data
+            elif isinstance(data, dict):
+                records = [data]
+            else:
+                records = []
+        except json.JSONDecodeError:
+            records = []
+            for line in content.splitlines():
+                line = line.strip()
+                if not line:
+                    continue
+                record = json.loads(line, parse_constant=lambda c: None)
+                records.append(record)
+        out = "\n".join(json.dumps(obj) for obj in records)
+
+
 
         # Convert array -> NDJSON
         if isinstance(data, list):
